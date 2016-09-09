@@ -1,0 +1,3 @@
+Q1) Advance Functionality of calculators using RMI.(4-5 Ops)
+Q2) Create and Demonstrate a remote server obj stream with few string functions(>=5)
+Default port:1099
