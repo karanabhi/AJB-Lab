@@ -55,4 +55,15 @@ public class DataAccessTemplate {
 
     }//checkUname()
 
+    public int updateAdmin(Bank bank, char stat) {
+
+        query = "update bank_user set status=? where account_no=?";
+        if (stat == 'G') {
+            return jdbcTemplateObject.update(query, new Object[]{1, bank.getAccount_number()});
+        } else if (stat == 'F') {
+            return jdbcTemplateObject.update(query, new Object[]{0, bank.getAccount_number()});
+        }
+        return 0;
+    }//UpdateAdmin()
+
 }//DataAccessTemplate

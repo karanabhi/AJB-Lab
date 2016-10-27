@@ -1,7 +1,10 @@
 
-
+import BankPOJO.Bank;
 import DataAccess.DataAccess;
+import DataAccess.DataAccessTemplate;
 import javax.swing.JOptionPane;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  *
@@ -91,35 +94,37 @@ public class AdminMaster extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
-        DataAccess da = new DataAccess();
-        String ac = acnt.getText();
-
-        int x = da.updateAdmin(ac,'G');
-        if (x == 1) {
-            JOptionPane.showMessageDialog(null, "Updation Successfull...");
-        } else if (x == 0) {
-            JOptionPane.showMessageDialog(null, "Invalid Account No or Something went wrong!");
-        }
-
+        upDateAdmin('G');
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-      DataAccess da = new DataAccess();
-        String ac = acnt.getText();
-
-        int x = da.updateAdmin(ac,'F');
-        if (x == 1) {
-            JOptionPane.showMessageDialog(null, "Updation Successfull...");
-        } else if (x == 0) {
-            JOptionPane.showMessageDialog(null, "Invalid Account No or Something went wrong!");
-        }
+        upDateAdmin('F');
 
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void acntActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acntActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_acntActionPerformed
+
+    private void upDateAdmin(char stat) {
+
+        String ac = acnt.getText();
+
+        Bank bank = new Bank();
+        bank.setAccount_number(ac);
+
+        ApplicationContext contxt = new ClassPathXmlApplicationContext("Beans.xml");
+        DataAccessTemplate dat = (DataAccessTemplate) contxt.getBean("bankJDBCTemplate");
+
+        int x = dat.updateAdmin(bank, stat);
+        if (x == 1) {
+            JOptionPane.showMessageDialog(null, "Updation Successfull...");
+        } else if (x == 0) {
+            JOptionPane.showMessageDialog(null, "Invalid Account No or Something went wrong!");
+        }
+
+    }//upDateAdmin()
 
     /**
      * @param args the command line arguments

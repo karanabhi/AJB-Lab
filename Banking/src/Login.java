@@ -2,7 +2,6 @@
 import BankPOJO.Bank;
 import DataAccess.DataAccess;
 import DataAccess.DataAccessTemplate;
-import Mappers.LoginMapper;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.springframework.context.ApplicationContext;
@@ -15,7 +14,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 /**
  *
- * @author student
+ * @author Abhishek Karan
  */
 public class Login extends javax.swing.JFrame {
 
@@ -137,7 +136,7 @@ public class Login extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Invalid Credentials! OR Admin has blocked You!");
             } else {
                 JOptionPane.showMessageDialog(null, "Login Successful!");
-                // this.setVisible(false);
+               // this.setVisible(false);
                 //Dashboard db = new Dashboard(uid);
                 //db.setVisible(true);
             }
