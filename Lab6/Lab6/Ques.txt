@@ -1,0 +1,6 @@
+Q1) WAP to retrive student details from student DB using servlets & display in a tabular form in a browser.
+Q2) WAP for the foll. scenario:
+	A salary portal for an organization that consists of various ;depts. and staff designations.
+	
+
+<input type="submit" name="<% rs.getString(1);%>"><% rs.getString(1);%></input>

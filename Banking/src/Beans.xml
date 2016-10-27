@@ -7,16 +7,16 @@
     <!-- Initialize for data source -->
     <bean id="datasource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/abhi"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/ajp"/>
         <property name="username" value="root"/>
-        <property name="password" value="student"/>
+        <property name="password" value=""/>
     </bean>
     
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
         <property name="dataSource" ref="datasource"/>
     </bean>
     
-    <!-- Definition for studentJDBCTemplate bean-->
+    <!-- Definition for JDBCTemplate bean-->
     <bean id="bankJDBCTemplate" class="DataAccess.DataAccessTemplate">
         <property name="jdbcTemplateObject" ref="jdbcTemplate"/>
     </bean>    

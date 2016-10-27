@@ -1,16 +1,14 @@
 
-
+import BankPOJO.Bank;
 import DataAccess.DataAccess;
+import DataAccess.DataAccessTemplate;
 import javax.swing.JOptionPane;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
  *
- * @author student
+ * @author Abhishek Karan
  */
 public class SignUp extends javax.swing.JFrame {
 
@@ -122,18 +120,24 @@ public class SignUp extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Account Number can only 4 Digits");
         } else {
 
-            DataAccess da = new DataAccess();
-            int stat = da.signUp(name, pass, accno);
+            Bank bank = new Bank();
+            bank.setUsername(name);
+            bank.setPassword(pass);
+            bank.setAccount_number(accno);
+
+            ApplicationContext contx = new ClassPathXmlApplicationContext("Beans.xml");
+            DataAccessTemplate dat = (DataAccessTemplate) contx.getBean("bankJDBCTemplate");
+
+            int stat = dat.signUp(bank);
             if (stat == -1) {
                 JOptionPane.showMessageDialog(null, "UserName already exists...Please choose a new one!");
             } else if (stat == -2) {
                 JOptionPane.showMessageDialog(null, "Account Number Already Exists");
-            } else if (stat > 0) {
+            } else if (stat == 1) {
                 JOptionPane.showMessageDialog(null, "Successfull SignUP!");
-                this.setVisible(false);
-                Login log = new Login();
-                log.setVisible(true);
-
+                //this.setVisible(false);
+                //Login log = new Login();
+                //log.setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(null, "Something went wrong...Please Try Again");
             }

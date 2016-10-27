@@ -2,6 +2,8 @@ package DataAccess;
 
 import BankPOJO.Bank;
 import Mappers.LoginMapper;
+import com.mysql.jdbc.PreparedStatement;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
@@ -9,24 +11,48 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * @author Abhishek Karan
  */
 public class DataAccessTemplate {
-    
+
     private JdbcTemplate jdbcTemplateObject;
     Bank bank = null;
     String query = "";
-    
+
     public void setJdbcTemplateObject(JdbcTemplate jdbcTemplateObject) {
         this.jdbcTemplateObject = jdbcTemplateObject;
     }
-    
-    public Bank login(String uname, String pass) {
-        
-        query = "select uid from bank_user where uname=? and upass=? and status=?";
-        bank = jdbcTemplateObject.queryForObject(query, new Object[]{uname, pass, 1}, new LoginMapper());
-        if (bank.equals(null)) {
-            bank.setUid(0);
-        }
-        return bank;
-        
+
+    public List<Bank> login(Bank banks) {
+
+        query = "select uid from bank_user where uname=? and upass=? and status=? ";
+        return jdbcTemplateObject.query(query, new Object[]{banks.getUsername(), banks.getPassword(), 1}, new LoginMapper());
+
     }//login()
+
+    public int signUp(Bank banks) {
+
+        if (!checkAccNo(banks).isEmpty()) {
+            return -2;
+        }
+        if (!checkUname(banks).isEmpty()) {
+            return -1;
+        }
+
+        query = "insert into bank_user(uname,upass,account_no) values(?,?,?)";
+        return jdbcTemplateObject.update(query, new Object[]{banks.getUsername(), banks.getPassword(), banks.getAccount_number()});
+
+    }//signup()
+
+    private List<Bank> checkAccNo(Bank bank) {
+
+        query = "select uid from bank_user where account_no=? ";
+        return jdbcTemplateObject.query(query, new Object[]{bank.getAccount_number()}, new LoginMapper());
+
+    }//checkAccno()
+
+    private List<Bank> checkUname(Bank bank) {
+
+        query = "select uid from bank_user where uname=? ";
+        return jdbcTemplateObject.query(query, new Object[]{bank.getUsername()}, new LoginMapper());
+
+    }//checkUname()
 
 }//DataAccessTemplate
