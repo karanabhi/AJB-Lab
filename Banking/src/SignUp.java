@@ -135,9 +135,9 @@ public class SignUp extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Account Number Already Exists");
             } else if (stat == 1) {
                 JOptionPane.showMessageDialog(null, "Successfull SignUP!");
-                //this.setVisible(false);
-                //Login log = new Login();
-                //log.setVisible(true);
+                this.setVisible(false);
+                Login log = new Login();
+                log.setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(null, "Something went wrong...Please Try Again");
             }

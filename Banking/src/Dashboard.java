@@ -1,9 +1,13 @@
 
-
+import BankPOJO.Bank;
 import DataAccess.DataAccess;
-import java.sql.ResultSet;
+import DataAccess.DataAccessTemplate;
+import java.util.Iterator;
+import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  *
@@ -17,10 +21,13 @@ public class Dashboard extends javax.swing.JFrame {
     int uid;
     double bal = 0.0;
     String nm = "", accn = "";
+    Bank bank;
+    ApplicationContext contxt = new ClassPathXmlApplicationContext("Beans.xml");
+    DataAccessTemplate dat = (DataAccessTemplate) contxt.getBean("bankJDBCTemplate");
 
-    public Dashboard(int uid) {
+    public Dashboard(Bank bank) {
         initComponents();
-        this.uid = uid;
+        this.bank = bank;
     }
 
     public Dashboard() {
@@ -162,37 +169,30 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
 
-        DataAccess da = new DataAccess();
-        ResultSet rs = null;
+//        try {
+        nm = bank.getUsername();
+        accn = bank.getAccount_number();
+        bal = bank.getBalance();
 
-        try {
-            rs = da.fetchData(uid);
-            rs.next();
-            nm = rs.getString(1);
-            accn = rs.getString(2);
-            bal = rs.getDouble(3);
+        name.setText(nm);
+        acc.setText(accn);
+        balance.setText("" + bal);
 
-            name.setText(nm);
-            acc.setText(accn);
-            balance.setText("" + bal);
+        DefaultListModel model = new DefaultListModel();
 
-            DefaultListModel model = new DefaultListModel();
+        bank.setPay(bank.getUid());
 
-            rs = da.fetchpayeeTrans(uid);
-            while (rs.next()) {
-                model.addElement("You Payed " + rs.getDouble(1) + " to " + rs.getString(2) + "  on " + rs.getString(3) + " ");
-            }
-            rs = da.fetchpayerTrans(uid);
-            while (rs.next()) {
-                model.addElement("You received " + rs.getDouble(1) + " from " + rs.getString(2) + "  on " + rs.getString(3) + " ");
-            }
-
-            trans.setModel(model);
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        List<Bank> lst = dat.fetchpayTrans(bank, "payee");
+        for (Bank b : lst) {
+            model.addElement("You Payed " + b.getAmount() + " to " + b.getUsername() + "  on " + b.getTimestamp() + " ");
         }
 
+        lst = dat.fetchpayTrans(bank, "payer");
+        for (Bank b : lst) {
+            model.addElement("You received " + b.getAmount() + " from " + b.getUsername() + "  on " + b.getTimestamp() + " ");
+        }
+
+        trans.setModel(model);
 
     }//GEN-LAST:event_formWindowActivated
 
@@ -200,20 +200,23 @@ public class Dashboard extends javax.swing.JFrame {
 
         Double amt = Double.parseDouble(amount.getText());
         String acno = acntno.getText();
-        DataAccess da = new DataAccess();
+
+        bank.setAmount(amt);
+        bank.setAccount_number(acno);
 
         if (acno.isEmpty() || amt <= 0.0 || amt > bal) {
             JOptionPane.showMessageDialog(null, "Please give valid details");
         } else {
-            if (da.checkAccNo(acno) == 1) {
+            if (dat.checkAccNo(bank).isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Invalid Account Number.");
             } else {
-                int x = da.updateAmount(acno, amt, uid);
+                bank.setUid(bank.getUid());
+                int x = dat.updateAmount(bank);
                 if (x == 0) {
                     JOptionPane.showMessageDialog(null, "Something went wrong!!");
                 } else if (x == 1) {
                     JOptionPane.showMessageDialog(null, "Updated....");
-                    da.updateBankTrans(uid, acno, amt);
+                    dat.updateBankTrans(bank);
                 }
             }
         }

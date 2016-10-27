@@ -2,6 +2,7 @@
 import BankPOJO.Bank;
 import DataAccess.DataAccess;
 import DataAccess.DataAccessTemplate;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.springframework.context.ApplicationContext;
@@ -118,27 +119,33 @@ public class Login extends javax.swing.JFrame {
         DataAccess da = new DataAccess();
         String uname = un.getText();
         String pass = pa.getText();
-
+        
         if (uname.equals("admin") && pass.equals("admin")) {
             this.setVisible(false);
             new AdminMaster().setVisible(true);
         } else {
-
+            
             Bank bank = new Bank();
             bank.setUsername(uname);
             bank.setPassword(pass);
-
+            
             ApplicationContext context = new ClassPathXmlApplicationContext("Beans.xml");
             DataAccessTemplate dat = (DataAccessTemplate) context.getBean("bankJDBCTemplate");
-
+            
             List<Bank> lst = dat.login(bank);
             if (lst.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Invalid Credentials! OR Admin has blocked You!");
             } else {
                 JOptionPane.showMessageDialog(null, "Login Successful!");
-               // this.setVisible(false);
-                //Dashboard db = new Dashboard(uid);
-                //db.setVisible(true);
+                int a = lst.indexOf(bank);
+                for (Bank b : lst) {
+                    bank.setUid(b.getUid());
+                    bank.setAccount_number(b.getAccount_number());
+                    bank.setBalance(b.getBalance());
+                }
+                this.setVisible(false);
+                Dashboard db = new Dashboard(bank);
+                db.setVisible(true);
             }
         }
 

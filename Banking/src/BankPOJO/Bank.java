@@ -6,9 +6,9 @@ package BankPOJO;
  */
 public class Bank {
 
-    private String username, password, account_number, payee, payer, timestamp;
+    private String username, password, account_number, timestamp;
     private double balance, amount;
-    int uid, status;
+    int uid, pay;
 
     public String getUsername() {
         return username;
@@ -34,20 +34,12 @@ public class Bank {
         this.account_number = account_number;
     }
 
-    public String getPayee() {
-        return payee;
+    public int getPay() {
+        return pay;
     }
 
-    public void setPayee(String payee) {
-        this.payee = payee;
-    }
-
-    public String getPayer() {
-        return payer;
-    }
-
-    public void setPayer(String payer) {
-        this.payer = payer;
+    public void setPay(int pay) {
+        this.pay = pay;
     }
 
     public String getTimestamp() {
@@ -80,14 +72,6 @@ public class Bank {
 
     public void setUid(int uid) {
         this.uid = uid;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
     }
 
 }//class

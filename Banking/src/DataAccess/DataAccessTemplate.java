@@ -1,7 +1,7 @@
 package DataAccess;
 
 import BankPOJO.Bank;
-import Mappers.LoginMapper;
+import Mappers.*;
 import com.mysql.jdbc.PreparedStatement;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,7 +22,7 @@ public class DataAccessTemplate {
 
     public List<Bank> login(Bank banks) {
 
-        query = "select uid from bank_user where uname=? and upass=? and status=? ";
+        query = "select uid,uname,account_no,balance from bank_user where uname=? and upass=? and status=? ";
         return jdbcTemplateObject.query(query, new Object[]{banks.getUsername(), banks.getPassword(), 1}, new LoginMapper());
 
     }//login()
@@ -41,17 +41,17 @@ public class DataAccessTemplate {
 
     }//signup()
 
-    private List<Bank> checkAccNo(Bank bank) {
+    public List<Bank> checkAccNo(Bank bank) {
 
         query = "select uid from bank_user where account_no=? ";
-        return jdbcTemplateObject.query(query, new Object[]{bank.getAccount_number()}, new LoginMapper());
+        return jdbcTemplateObject.query(query, new Object[]{bank.getAccount_number()}, new CheckMapper());
 
     }//checkAccno()
 
-    private List<Bank> checkUname(Bank bank) {
+    public List<Bank> checkUname(Bank bank) {
 
         query = "select uid from bank_user where uname=? ";
-        return jdbcTemplateObject.query(query, new Object[]{bank.getUsername()}, new LoginMapper());
+        return jdbcTemplateObject.query(query, new Object[]{bank.getUsername()}, new CheckMapper());
 
     }//checkUname()
 
@@ -65,5 +65,41 @@ public class DataAccessTemplate {
         }
         return 0;
     }//UpdateAdmin()
+
+    public List<Bank> fetchpayTrans(Bank bank, String pay) {
+        query = "select bt.amount,bu.uname,bt.timestamp from bank_trans bt,bank_user bu "
+                + "where bt.payer=bu.uid and " + pay + "=? ";
+        return jdbcTemplateObject.query(query, new Object[]{bank.getPay()}, new TransactionsMapper());
+
+    }//fetchPayTrans()
+
+    public int updateAmount(Bank bank) {
+        query = "update bank_user set balance=balance+? where account_no=?";
+        if (jdbcTemplateObject.update(query, new Object[]{bank.getAmount(), bank.getAccount_number()}) == 0) {
+            return 0;
+        } else {
+            query = "update bank_user set balance=balance-? where uid=?";
+            if (jdbcTemplateObject.update(query, new Object[]{bank.getAmount(), bank.getUid()}) == 0) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
+    }//updateAmt()
+
+    public int updateBankTrans(Bank bank) {
+        query = "select uid from bank_user where account_no=?";
+        List<Bank> lst = jdbcTemplateObject.query(query, new Object[]{bank.getAccount_number()}, new CheckMapper());
+        int payer = 0;
+        for (Bank b : lst) {
+            payer = b.getUid();
+        }
+
+        query = "insert into bank_trans(payee,payer,amount) values(?,?,?)";
+        if (jdbcTemplateObject.update(query, new Object[]{bank.getUid(), payer, bank.getAmount()}) == 0) {
+            return 0;
+        }
+        return 1;
+    }//updatetrans()
 
 }//DataAccessTemplate
